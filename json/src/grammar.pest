@@ -1,0 +1,38 @@
+WHITESPACE = _{ " " | "\t" | "\r" | "\n"}
+
+value = _{ object | array | string | number | boolean | null }
+
+null = { "null" }
+
+boolean = { "true" | "false" }
+
+object = {
+    "{" ~ "}" |
+    "{" ~ pair ~ ("," ~ pair)* ~ "}"  
+}
+array = {
+    "[" ~ "]" |
+    "[" ~ value ~ ("," ~ value)* ~ "]"  
+}
+    
+pair = { string ~ ":" ~ value }
+
+string = ${ "\"" ~ inner ~ "\""  }
+inner = @{ char* }
+char = {
+    !("\"" | "\\") ~ ANY
+    | "\\" ~ ("\"" | "\\" | "b" | "f" | "n" | "r" | "t") // basically "/" followed by any of the stuff inside paren, pest itself doesnt have the escapse sequence thing but we have to do it for the json 
+    | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+}
+
+// comments for my mental model
+number = @{
+    "-"? // negative
+    ~ ("0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*) // can preceed with zero or 1..9+
+    ~ ("." ~ ASCII_DIGIT*)? // decmianls. 
+    ~ (^"e" ~ ("-" | "+")? ~ ASCII_DIGIT+)? // eE(-+)?\d+ 
+}
+
+json = _{
+    SOI ~ (object | array) ~ EOI
+}

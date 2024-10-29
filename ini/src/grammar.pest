@@ -1,0 +1,16 @@
+WHITESPACE = _{ " " | "\t" }
+COMMENT = _{ "#" ~ (!NEWLINE ~ ANY)*}
+
+char = { ASCII_ALPHANUMERIC | "." | "/" | "_" } // these are the only relevant chars 
+key = { char+ } // cannot be empty
+value = { char* } // can be  empty
+
+
+section = { "[" ~ key ~ "]" }
+property = { key ~ "=" ~ value}
+
+file = {
+    SOI ~
+    ((section | property)? ~ NEWLINE)* ~ // ? match 0 times or once
+    EOI
+}

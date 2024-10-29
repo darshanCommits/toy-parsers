@@ -1,0 +1,24 @@
+file = _{
+    SOI 
+    ~ "\n"* 
+    ~ (statement ~ "\n"+)* 
+    ~ statement? // last line with no "\n"
+    ~ EOI
+}
+    
+statement = _{ expr }
+expr = {
+    assignmentExpr
+|     monadicExpr
+|     dyadicExpr
+|     string
+|     terms
+}
+
+monadicExpr = { verb ~ expr } // verb is some operator
+dyadicExpr = { (monadicExpr | terms) ~ verb ~ expr }
+assignmentExpr = {ident ~ "=:" ~ expr}
+terms = { term+ }
+term = {
+    decimal | integer | ident | "(" 
+}
